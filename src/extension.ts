@@ -1,6 +1,12 @@
 import * as vscode from "vscode";
+import { setupDefaultKeybindings } from "./keybinding";
+import { COMMANDS } from "./constants";
 
 export function activate(context: vscode.ExtensionContext) {
+  // Automatically setup default keybindings on activation
+  setupDefaultKeybindings().catch((error) => {
+    console.error("Failed to setup default keybindings:", error);
+  });
   // Helper function to get word under cursor
   function getWordUnderCursor(editor: vscode.TextEditor): string {
     const position = editor.selection.active;
@@ -18,21 +24,17 @@ export function activate(context: vscode.ExtensionContext) {
 
   async function executeVimSubstitute(
     searchText: string,
-    mode: "all" | "line" = "all"
+    mode: "all" | "line"
   ) {
     const escapedSearchText = escapeRegexCharacters(searchText);
-    const modeCommand = mode === "all" ? [":", "%", "s", "/"] : [":", "s", "/"];
+
+    // Build the substitute command string
+    const substituteCmd =
+      mode === "all" ? `%s/${escapedSearchText}/` : `s/${escapedSearchText}/`;
 
     try {
-      // First execute the Vim remap command to enter to vim command mode
-      // TODO: add different search and replace commands (e.g., :%s, :s, etc.) based on keybindings
       await vscode.commands.executeCommand("vim.remap", {
-        after: modeCommand,
-      });
-
-      // Then type the escaped search text followed by a slash to start to write the replace text
-      await vscode.commands.executeCommand("type", {
-        text: `${escapedSearchText}/`,
+        after: [":", ...substituteCmd.split("")],
       });
 
       return;
@@ -41,59 +43,43 @@ export function activate(context: vscode.ExtensionContext) {
     }
   }
 
-  const getTextToReplace = (): string => {
-    const editor = vscode.window.activeTextEditor;
+  const searchAndReplace = async (mode: "all" | "line"): Promise<void> => {
+    try {
+      const editor = vscode.window.activeTextEditor;
 
-    if (!editor) {
-      return "";
+      if (!editor) {
+        return;
+      }
+
+      const selection = editor.selection;
+      const hasSelection = !selection.isEmpty;
+      let textToReplace = "";
+
+      if (hasSelection) {
+        textToReplace = editor.document.getText(selection);
+      } else {
+        textToReplace = getWordUnderCursor(editor);
+      }
+
+      if (!textToReplace.trim()) {
+        return;
+      }
+
+      await executeVimSubstitute(textToReplace, mode);
+    } catch (error) {
+      vscode.window.showErrorMessage(`Error: ${error}`);
     }
-
-    const selection = editor.selection;
-    const hasSelection = !selection.isEmpty;
-    let textToReplace = "";
-
-    if (hasSelection) {
-      textToReplace = editor.document.getText(selection);
-    } else {
-      textToReplace = getWordUnderCursor(editor);
-    }
-
-    if (!textToReplace.trim()) {
-      return "";
-    }
-    return textToReplace;
   };
 
-  // Register the main replace command
+  // Register the main replace commands
   const replaceAllCommand = vscode.commands.registerCommand(
-    "vim-substitute.replaceAll",
-    async () => {
-      try {
-        const textToReplace = getTextToReplace();
-        if (!textToReplace) {
-          return;
-        }
-        await executeVimSubstitute(textToReplace, "all");
-      } catch (error) {
-        vscode.window.showErrorMessage(`Error: ${error}`);
-      }
-    }
+    COMMANDS.REPLACE_ALL,
+    async () => searchAndReplace("all")
   );
 
-  // Register the main replace command
   const replaceLineCommand = vscode.commands.registerCommand(
-    "vim-substitute.replaceLine",
-    async () => {
-      try {
-        const textToReplace = getTextToReplace();
-        if (!textToReplace) {
-          return;
-        }
-        await executeVimSubstitute(textToReplace, "line");
-      } catch (error) {
-        vscode.window.showErrorMessage(`Error: ${error}`);
-      }
-    }
+    COMMANDS.REPLACE_LINE,
+    async () => searchAndReplace("line")
   );
 
   context.subscriptions.push(replaceAllCommand, replaceLineCommand);
