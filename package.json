@@ -9,7 +9,7 @@
     "url": "https://github.com/Strocs/vim-substitute"
   },
   "publisher": "Strocs",
-  "version": "0.1.0",
+  "version": "0.1.1",
   "engines": {
     "vscode": "^1.102.0"
   },
