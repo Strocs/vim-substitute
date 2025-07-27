@@ -16,14 +16,18 @@ export function activate(context: vscode.ExtensionContext) {
     return text.replace(/[.*+?^${}()|[\]\\]/g, "\\$&");
   }
 
-  async function executeVimSubstitute(searchText: string) {
+  async function executeVimSubstitute(
+    searchText: string,
+    mode: "all" | "line" = "all"
+  ) {
     const escapedSearchText = escapeRegexCharacters(searchText);
+    const modeCommand = mode === "all" ? [":", "%", "s", "/"] : [":", "s", "/"];
 
     try {
       // First execute the Vim remap command to enter to vim command mode
       // TODO: add different search and replace commands (e.g., :%s, :s, etc.) based on keybindings
       await vscode.commands.executeCommand("vim.remap", {
-        after: [":", "%", "s", "/"],
+        after: modeCommand,
       });
 
       // Then type the escaped search text followed by a slash to start to write the replace text
@@ -69,7 +73,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (!textToReplace) {
           return;
         }
-        await executeVimSubstitute(textToReplace);
+        await executeVimSubstitute(textToReplace, "all");
       } catch (error) {
         vscode.window.showErrorMessage(`Error: ${error}`);
       }
@@ -85,7 +89,7 @@ export function activate(context: vscode.ExtensionContext) {
         if (!textToReplace) {
           return;
         }
-        await executeVimSubstitute(textToReplace);
+        await executeVimSubstitute(textToReplace, "line");
       } catch (error) {
         vscode.window.showErrorMessage(`Error: ${error}`);
       }

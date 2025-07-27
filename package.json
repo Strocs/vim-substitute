@@ -26,12 +26,12 @@
       {
         "command": "vim-substitute.replaceAll",
         "key": "space s a",
-        "when": "editorTextFocus && vim.mode == 'Normal'"
+        "when": "editorTextFocus && vim.mode != 'Insert'"
       },
       {
         "command": "vim-substitute.replaceLine",
         "key": "space s l",
-        "when": "editorTextFocus && (vim.mode == 'Visual' || vim.mode == 'VisualLine' || vim.mode == 'VisualBlock')"
+        "when": "editorTextFocus && vim.mode != 'Insert'"
       }
     ]
   },

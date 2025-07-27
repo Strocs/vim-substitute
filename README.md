@@ -8,12 +8,12 @@ A VS Code extension that enhances the VSCodeVim experience by providing intellig
 - **Selection Support**: Uses selected text when available (works in Visual, VisualLine, and VisualBlock modes)
 - **Regex Escaping**: Safely escapes special regex characters to prevent unintended pattern matching
 - **Dual Command Support**: Two distinct commands for different substitute scopes
-  - **Replace All** (`:%s/`): Replace throughout the entire file
-  - **Replace Line** (`:s/`): Replace only on the current line or selection
+  - **Replace All Word/Selection** (`:%s/`): Replace throughout the entire file using the selected text or word under cursor
+  - **Replace Line Word/Selection** (`:s/`): Replace only on the current line using the selected text or word under cursor
 - **Vim Integration**: Seamlessly integrates with VSCodeVim's command mode
 - **Flexible Keybindings**:
-  - `Space + s + a` for replace all in Normal mode
-  - `Space + s + l` for replace line in Visual modes
+  - `Space + s + a` for Replace All Word/Selection in Normal mode
+  - `Space + s + l` for Replace Line Word/Selection in Visual modes
 
 ## How It Works
 
@@ -51,15 +51,15 @@ The extension implements a sophisticated workflow that combines VS Code's editor
 ### Replace All (File-wide)
 
 1. Place your cursor on a word or select text you want to replace
-2. Press `Space + s + a`
+2. Run the command `Vim Substitute: Replace All Word/Selection` (or press `Space + s + a`)
 3. The command line will show `:%s/your-text/` with cursor positioned after the second `/`
 4. Type your replacement text and press Enter to execute
 
 ### Replace Line (Current line/selection)
 
 1. Place your cursor on a word or select text you want to replace
-2. Press `Space + s + l`
-3. The command line will show `:%s/your-text/` with cursor positioned after the second `/`
+2. Run the command `Vim Substitute: Replace Line Word/Selection` (or press `Space + s + l`)
+3. The command line will show `:s/your-text/` with cursor positioned after the second `/`
 4. Type your replacement text and press Enter to execute
 
 ### Example Workflow
@@ -145,8 +145,8 @@ await vscode.commands.executeCommand("vim.remap", {
 #### Package.json Contributions
 
 - **Commands**:
-  - Registers `vim-substitute.replaceAll` command for file-wide substitution
-  - Registers `vim-substitute.replaceLine` command for line-specific substitution
+  - Registers `vim-substitute.replaceAll` command as "Replace All Word/Selection" for file-wide substitution
+  - Registers `vim-substitute.replaceLine` command as "Replace Line Word/Selection" for line-specific substitution
 - **Keybindings**:
   - Maps `Space + s + a` to replace all command in Normal mode
   - Maps `Space + s + l` to replace line command in Visual modes
