@@ -1,5 +1,5 @@
 {
-  "name": "vim-substitute",
+  "name": "substitute-vim",
   "displayName": "Vim Substitute for VSCodeVim",
   "description": "Extension that adds custom find and replace functionality to VSCodeVim",
   "license": "MIT",
@@ -18,27 +18,18 @@
     "Other"
   ],
   "main": "./dist/extension.js",
+  "activationEvents": [
+    "onStartupFinished"
+  ],
   "contributes": {
     "commands": [
       {
-        "command": "vim-substitute.replaceAll",
+        "command": "substitute-vim.replaceAll",
         "title": "Replace All Word/Selection"
       },
       {
-        "command": "vim-substitute.replaceLine",
+        "command": "substitute-vim.replaceLine",
         "title": "Replace Line Word/Selection"
-      }
-    ],
-    "keybindings": [
-      {
-        "command": "vim-substitute.replaceAll",
-        "key": "space s a",
-        "when": "editorTextFocus && vim.mode != 'Insert'"
-      },
-      {
-        "command": "vim-substitute.replaceLine",
-        "key": "space s l",
-        "when": "editorTextFocus && vim.mode != 'Insert'"
       }
     ]
   },
