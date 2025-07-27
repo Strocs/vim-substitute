@@ -6,6 +6,8 @@ Check [Keep a Changelog](http://keepachangelog.com/) for recommendations on how 
 
 ## [Unreleased]
 
+## [0.1.3] - 2025-01-27
+
 ### Added
 
 - **Modular architecture**: Reorganized codebase into logical modules for better maintainability
